@@ -1,23 +1,32 @@
 #!/bin/bash
 
-URL="https://docs.google.com/document/export?format=txt&id=1t9EU4JzmTm0UEzWr0F2ZS40A-yZbwZBlFYYvkCNIle8"
+ID="1t9EU4JzmTm0UEzWr0F2ZS40A-yZbwZBlFYYvkCNIle8"
+PATTERN="([23]/[0-9][0-9]?)|rally|lindsay|nun|super"
 
 cd `dirname $0`
 
-curl -s $URL > newsies.txt
+URL="https://docs.google.com/document/export?format=txt&id=$ID"
+RAW="$ID.raw.txt"
+CURR="$ID.curr.txt"
+PREV="$ID.prev.txt"
+DIFF="$ID.diff.txt"
 
-cat newsies.txt | egrep -i '([23]/[0-9][0-9]?)|rally|lindsay|nun' > curr.txt
+curl -s $URL > $RAW
 
-touch prev.txt # just in case
-if diff -u -i -w prev.txt curr.txt; then
-	# nothing changed
+cat $RAW | egrep -i "$PATTERN" > $CURR
+
+touch $PREV # just in case
+diff -u -i -w $PREV $CURR > $DIFF
+if [ "$?" = "0" ]; then
+	# diff exists zero if there no differences were found
 	exit
 fi
 
+cat $DIFF
 echo
 echo -n "----------------------------------------"
 echo "----------------------------------------"
 echo
 
-cat curr.txt
-cp curr.txt prev.txt
+cat $CURR
+mv $CURR $PREV
