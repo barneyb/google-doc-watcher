@@ -34,7 +34,7 @@ CURR="$ID.curr.txt"
 PREV="$ID.prev.txt"
 DIFF="$ID.diff.txt"
 
-curl -s $URL > $RAW
+curl -s $URL | sed '/^[ \t\r]*$/d' > $RAW
 
 if [ "$PATTERN" = "" ]; then
 	cp $RAW $CURR
@@ -56,4 +56,6 @@ echo "----------------------------------------"
 echo
 
 cat $CURR
+echo # trailing newline
+
 mv $CURR $PREV
