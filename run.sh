@@ -30,11 +30,12 @@ cd `dirname $0`
 
 URL="https://docs.google.com/document/export?format=txt&id=$ID"
 RAW="$ID.raw.txt"
+HEAD="$ID.head.txt"
 CURR="$ID.curr.txt"
 PREV="$ID.prev.txt"
 DIFF="$ID.diff.txt"
 
-curl -s $URL | sed '/^[ \t\r]*$/d' > $RAW
+curl -s -D $HEAD $URL | sed '/^[ \t\r]*$/d' > $RAW
 
 if [ "$PATTERN" = "" ]; then
 	cp $RAW $CURR
@@ -53,6 +54,7 @@ cat $DIFF
 echo
 echo -n "----------------------------------------"
 echo "----------------------------------------"
+cat $HEAD | grep Content-Disposition | cut -d '"' -f 2
 echo "https://docs.google.com/document/d/$ID"
 echo -n "----------------------------------------"
 echo "----------------------------------------"
